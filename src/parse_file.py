@@ -62,7 +62,7 @@ def parse_filepath(path):
     text_extensions = ['txt', 'md']
     base_name = os.path.basename(path)
     without_ext = ".".join(base_name.split('.')[0:-1])
-    filename = without_ext + '.md'
+    filename = without_ext
 
     assert extension in video_extensions + audio_extensions + text_extensions + ['pdf'], 'File must be a txt, md, pdf, mp3, mp4, mkv, or webm file'
     if extension in video_extensions + audio_extensions:
@@ -133,7 +133,7 @@ def convert_yt_link_to_txt(link):
 
     convert_mp4_to_mp3(filepath, audio_path)
     text = convert_mp3_to_txt(audio_path)
-    filename = ".".join(base_name.split('.')[0:-1]) + '.md'
+    filename = ".".join(base_name.split('.')[0:-1])
 
 
     return text, filename
@@ -155,4 +155,4 @@ def convert_article_link_to_txt(link):
     os.system(f'pandoc {temp_dir}/article.html -o {temp_dir}/article.md')
     with open(f'{temp_dir}/article.md', 'r', encoding='utf-8') as f:
         md_contents = f.read()
-    return md_contents, title + '.md'
+    return md_contents, title

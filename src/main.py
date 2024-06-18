@@ -35,11 +35,15 @@ if __name__ == '__main__':
     if valid_file:
         content, filename = parse_filepath(arg)
 
+    filename = re.sub(r'[^a-zA-Z0-9_ ]+', '', filename) + '.md'
+
     content = add_yaml_header(content, filename, arg)
 
+    print(filename)
+    print(sys.argv[2])
     new_file = os.path.join(sys.argv[2], filename)
     print(f'Writing to {new_file}')
-    with open(new_file, 'w') as f:
+    with open(new_file, 'w', encoding='utf-8') as f:
         f.write(content)
 
 
