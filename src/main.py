@@ -5,7 +5,7 @@ import re
 from parse_file import parse_filepath, parse_weblink
 
 def add_yaml_header(content, filename, source):
-    yaml_header = f'---\ntitle: {filename}\nsource: {source}\n---\n\n'
+    yaml_header = f'---\naliases:\ntags: source\nbad_links:\ntitle: {filename}\nsource: {source}\n---\n\n'
     return yaml_header + content
 
 
