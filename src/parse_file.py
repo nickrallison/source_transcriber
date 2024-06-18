@@ -33,10 +33,10 @@ def convert_pdf_to_txt(path):
     return text
 
 def convert_mp4_to_mp3(video_path, audio_path):
-    os.system(f"ffmpeg -i \"{video_path}\" -b:a 128K -vn \"{audio_path}\"")
+    os.system(f"ffmpeg -y -i \"{video_path}\" -b:a 128K -vn \"{audio_path}\"")
 
 def transcode_mp3_to_mp3(audio_path_in, audio_path_out):
-    os.system(f"ffmpeg -i \"{audio_path_in}\" -b:a 128K \"{audio_path_out}\"")
+    os.system(f"ffmpeg -y -i \"{audio_path_in}\" -b:a 128K \"{audio_path_out}\"")
 
 def convert_mp3_to_txt(audio_path):
     return convert_mp3_to_txt_whisper_api(audio_path)
