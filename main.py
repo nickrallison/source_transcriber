@@ -2,10 +2,11 @@ import sys
 import os
 import re
 
-from parse_file import parse_filepath
+from parse_file import parse_filepath, parse_weblink
 
-def parse_weblink(link):
-    pass
+def add_yaml_header(content, filename, source):
+    yaml_header = f'---\ntitle: {filename}\nsource: {source}\n---\n\n'
+    return yaml_header + content
 
 
 
@@ -29,12 +30,16 @@ if __name__ == '__main__':
     assert not (valid_url and valid_file), 'Input is both a URL and a valid file path, if it is a URL, specify with http:// or https://, if it it a file, prefix it with ./'
 
     if valid_url:
-        content = parse_weblink(arg)
+        content, filename = parse_weblink(arg)
 
     if valid_file:
-        content = parse_filepath(arg)
+        content, filename = parse_filepath(arg)
 
-    print(content)
+    content = add_yaml_header(content, filename, arg)
+
+    new_file = os.path.join(sys.argv[2], filename)
+    with open(new_file, 'w') as f:
+        f.write(content)
 
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
