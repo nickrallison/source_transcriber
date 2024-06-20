@@ -37,6 +37,8 @@ if __name__ == '__main__':
 
     filename = re.sub(r'[^a-zA-Z0-9_ ]+', '', filename) + '.md'
 
+    content = re.sub(r'�', "'", content)
+
     content = add_yaml_header(content, filename, arg)
 
     print(filename)
