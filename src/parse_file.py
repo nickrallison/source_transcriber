@@ -3,6 +3,7 @@ import re
 import math
 import threading
 import json
+import subprocess
 
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfpage import PDFPage
@@ -37,10 +38,15 @@ def convert_pdf_to_txt(path):
     return text
 
 def  convert_mp4_to_mp3(video_path, audio_path):
-    os.system(f"ffmpeg -y -i \"{video_path}\" -b:a 128K -vn \"{audio_path}\"")
+    cmd = f"ffmpeg -y -i \"{video_path}\" -b:a 128K -vn \"{audio_path}\""
+    with open(os.devnull, 'wb') as devnull:
+        subprocess.run(cmd, stdout=devnull, stderr=subprocess.STDOUT)
+
 
 def transcode_mp3_to_mp3(audio_path_in, audio_path_out):
-    os.system(f"ffmpeg -y -i \"{audio_path_in}\" -b:a 128K \"{audio_path_out}\"")
+    cmd = f"ffmpeg -y -i \"{audio_path_in}\" -b:a 128K \"{audio_path_out}\""
+    with open(os.devnull, 'wb') as devnull:
+        subprocess.run(cmd, stdout=devnull, stderr=subprocess.STDOUT)
 
 def convert_mp3_to_txt(audio_path):
     assert 'OPENAI_API_KEY' in os.environ, 'OPENAI_API_KEY environment variable must be set'
@@ -120,8 +126,8 @@ def convert_mp3_to_txt(audio_path):
     words = []
     for section in sections:
         for word_json in section:
-            print(f"word_json: {word_json}")
-            print(word_json['word'])
+            # print(f"word_json: {word_json}")
+            # print(word_json['word'])
             words.append(word_json['word'])
     text = ' '.join(words)
     return text
@@ -373,7 +379,9 @@ def convert_yt_link_to_txt(link):
     for file in os.listdir(f'{temp_dir}/ytdlp'):
         os.remove(f'{temp_dir}/ytdlp/{file}')
 
-    os.system(f'yt-dlp -o "{temp_dir}/ytdlp/%(title)s.%(ext)s" {link}')
+    cmd = f'yt-dlp -o "{temp_dir}/ytdlp/%(title)s.%(ext)s" {link}'
+    with open(os.devnull, 'wb') as devnull:
+        subprocess.run(cmd, stdout=devnull, stderr=subprocess.STDOUT)
 
     # should only be one file in the directory
     assert len(os.listdir(f'{temp_dir}/ytdlp')) == 1, 'More than one file downloaded, please specify the file'

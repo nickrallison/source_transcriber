@@ -41,8 +41,8 @@ if __name__ == '__main__':
 
     content = add_yaml_header(content, filename, arg)
 
-    print(filename)
-    print(sys.argv[2])
+    # print(filename)
+    # print(sys.argv[2])
     new_file = os.path.join(sys.argv[2], filename)
     print(f'Writing to {new_file}')
     with open(new_file, 'w', encoding='utf-8') as f:
