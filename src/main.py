@@ -2,7 +2,7 @@ import sys
 import os
 import re
 
-from parse_file import parse_filepath, parse_weblink
+from parse_file import parse_filepath, parse_weblink, convert_mp3_to_txt
 
 def add_yaml_header(content, filename, source):
     yaml_header = f'---\naliases:\ntags: source\nbad_links:\ntitle: {filename}\nsource: {source}\n---\n\n'
@@ -45,6 +45,8 @@ if __name__ == '__main__':
     print(f'Writing to {new_file}')
     with open(new_file, 'w', encoding='utf-8') as f:
         f.write(content)
+
+    ####
 
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

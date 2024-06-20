@@ -39,3 +39,4 @@ python main.py [input] [output directory]
 
 - Pandoc for PDF
 - weblink pdf
+- Add Cost for each transcription
