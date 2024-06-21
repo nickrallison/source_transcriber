@@ -105,7 +105,7 @@ def convert_mp3_to_txt(audio_path):
 
     for thread in threads:
         thread.join()
-
+    #
     # for i in range(len(song_paths)):
     #     with open(f"out/{i}.json", 'w') as f:
     #         json.dump(responses[i], f)
@@ -121,16 +121,35 @@ def convert_mp3_to_txt(audio_path):
             responses[i][index]['end'] += offset
             responses[i][index]['response_index'] = i
 
-    sections = to_non_overlapping_sections(responses)
-
-    words = []
-    for section in sections:
-        for word_json in section:
-            # print(f"word_json: {word_json}")
-            # print(word_json['word'])
+    final_response = []
+    if len(responses) == 0:
+        raise Exception("No responses")
+    if len(responses) == 1:
+        words = []
+        for word_json in responses[0]:
             words.append(word_json['word'])
-    text = ' '.join(words)
-    return text
+        return ' '.join(words)
+
+    section = responses.pop(0)
+    while len(responses) > 0:
+        next_section = responses.pop(0)
+        section = merge_overlapping_sections(section, next_section)
+
+    words = ' '.join([word_json['word'] for word_json in section])
+
+    return words
+
+
+    # sections = to_non_overlapping_sections(responses)
+    #
+    # words = []
+    # for section in sections:
+    #     for word_json in section:
+    #         # print(f"word_json: {word_json}")
+    #         # print(word_json['word'])
+    #         words.append(word_json['word'])
+    # text = ' '.join(words)
+    # return text
 
 def to_non_overlapping_sections(responses):
     # Take in a list of responses, each response is a list of words with timestamps
@@ -176,6 +195,8 @@ def to_non_overlapping_sections(responses):
             inner_response[time_zone].append(word)
         responses_stacked.append(inner_response)
 
+    # print(json.dumps(responses_stacked, indent=4))
+
     sections = {}
     for response in responses_stacked:
         for key in response:
@@ -211,40 +232,53 @@ def to_non_overlapping_sections(responses):
     #         responses_out.append(response)
     #         responses_out.append(response)
 
-def merge_overlapping_sections(section1, section2, padding_time=2):
+def merge_overlapping_sections(section1, section2):
     section_merged = []
 
-    words_1 = [word_json['word'] for word_json in section1]
-    words_2 = [word_json['word'] for word_json in section2]
+    # words_1 = [word_json['word'] for word_json in section1]
+    # words_2 = [word_json['word'] for word_json in section2]
+    #
+    # print(f"words_1: {words_1}")
+    # print(f"words_2: {words_2}")
 
-    result, best_1_index_start, best_2_index_start = LCSubSeq(section1, section2, padding_time=padding_time)
+    result, best_1_index_start, best_2_index_start = LCSubSeq(section1, section2)
+
+    # print(f"result: {result}")
+    # print(f"best_1_index_start: {best_1_index_start}")
+    # print(f"best_2_index_start: {best_2_index_start}")
+    #
+    # best_1 = [word['word'] for word in section1[best_1_index_start:best_1_index_start + result]]
+    # best_2 = [word['word'] for word in section2[best_2_index_start:best_2_index_start + result]]
+
+    # print(f"best_1: {best_1}")
+    # print(f"best_2: {best_2}")
+
 
     index = 0
     while index < best_1_index_start:
         section_merged.append(section1[index])
         index += 1
 
+    start_section = section1[0:best_1_index_start]
+    middle_section = section1[best_1_index_start:best_1_index_start + result]
+    if best_2_index_start + result + 1 >= len(section2):
+        end_section = []
+    else:
+        end_section = section2[best_2_index_start + result + 1:]
 
-    # best_1 = section1[best_1_index_start:best_1_index_start + result]
-    # best_2 = section2[best_2_index_start:best_2_index_start + result]
-    #
-    # best_1_words = [word_json['word'] for word_json in best_1]
-    # best_2_words = [word_json['word'] for word_json in best_2]
+    # start_words = [word_json['word'] for word_json in start_section]
+    # middle_words = [word_json['word'] for word_json in middle_section]
+    # end_words = [word_json['word'] for word_json in end_section]
 
-    while index <= best_1_index_start + result:
-        section_merged.append(section1[index])
-        index += 1
+    # print(f"start_section: {start_words}")
+    # print(f"middle_section: {middle_words}")
+    # print(f"end_section: {end_words}")
 
-
-    # move to section 2
-    section2_offset = best_2_index_start - best_1_index_start
-    index_2 = index + section2_offset
-    while index_2 < len(section2):
-        section_merged.append(section2[index_2])
-        index_2 += 1
-
-    return section_merged
-
+    words = []
+    words.extend(start_section)
+    words.extend(middle_section)
+    words.extend(end_section)
+    return words
 
 def LCSubSeq(X, Y, padding_time=2):
 
