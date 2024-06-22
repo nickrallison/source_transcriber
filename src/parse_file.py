@@ -407,6 +407,9 @@ def convert_yt_link_to_txt(link):
     # assert that yt-dlp is installed
     assert os.system('yt-dlp --version') == 0, 'yt-dlp is not installed, please install yt-dlp'
 
+    id = re.search(r'watch\?v=(\w+)', link).group(1)
+    link = f"https://www.youtube.com/watch?v={id}"
+
     temp_dir = os.environ.get('TMPDIR', os.environ.get('TMP', os.environ.get('TEMP', '/tmp')))
     if not os.path.exists(f'{temp_dir}/ytdlp'):
         os.mkdir(f'{temp_dir}/ytdlp')
