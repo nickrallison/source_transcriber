@@ -30,18 +30,24 @@ if __name__ == '__main__':
     assert not (valid_url and valid_file), 'Input is both a URL and a valid file path, if it is a URL, specify with http:// or https://, if it it a file, prefix it with ./'
 
     if valid_url:
-        content, filename = parse_weblink(arg)
+        content, filename, directory = parse_weblink(arg)
 
     if valid_file:
         content, filename = parse_filepath(arg)
+        directory = "local"
 
     filename = re.sub(r'[^a-zA-Z0-9_ ]+', '', filename) + '.md'
 
-    content = re.sub(r'�', "'", content)
+    content = re.sub(r'[‘’‛]', "'", content)
+    content = re.sub(r'[“”‟]', '"', content)
+    content = re.sub(r'\s+', ' ', content)
 
     content = add_yaml_header(content, filename, arg)
 
-    new_file = os.path.join(sys.argv[2], filename)
+    new_file = os.path.join(sys.argv[2], directory, filename)
+    if not os.path.exists(os.path.join(sys.argv[2], directory)):
+        print(f'Creating directory {directory}')
+        os.makedirs(os.path.join(sys.argv[2], directory))
     print(f'Writing to {new_file}')
     with open(new_file, 'w', encoding='utf-8') as f:
         f.write(content)
