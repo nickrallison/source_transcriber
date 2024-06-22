@@ -419,7 +419,7 @@ def convert_yt_link_to_txt(link):
 
     get_filename_cmd = f'yt-dlp -o "%(uploader)s/%(title)s.%(ext)s" --get-filename {link}'
     get_filename = subprocess.check_output(get_filename_cmd).decode('utf-8').strip()
-    directory = re.search(r'(.*?)\\.*', get_filename).group(1)
+    directory = os.path.join('Youtube', re.search(r'(.*?)\\.*', get_filename).group(1))
 
     # should only be one file in the directory
     assert len(os.listdir(f'{temp_dir}/ytdlp')) == 1, 'More than one file downloaded, please specify the file'

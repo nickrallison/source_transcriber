@@ -37,10 +37,10 @@ if __name__ == '__main__':
         directory = "local"
 
     filename = re.sub(r'[^a-zA-Z0-9_ ]+', '', filename) + '.md'
+    filename = re.sub(r'\s+', ' ', filename)
 
     content = re.sub(r'[‘’‛]', "'", content)
     content = re.sub(r'[“”‟]', '"', content)
-    content = re.sub(r'\s+', ' ', content)
 
     content = add_yaml_header(content, filename, arg)
 
