@@ -39,6 +39,9 @@ if __name__ == '__main__':
     filename = re.sub(r'[^a-zA-Z0-9_ ]+', '', filename) + '.md'
     filename = re.sub(r'\s+', ' ', filename)
 
+    directory = re.sub(r'[^a-zA-Z0-9_/\\ ]+', '', directory)
+    directory = re.sub(r'\s+', ' ', directory)
+
     content = re.sub(r'[‘’‛]', "'", content)
     content = re.sub(r'[“”‟]', '"', content)
 
