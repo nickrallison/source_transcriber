@@ -407,6 +407,9 @@ def convert_yt_link_to_txt(link):
     # assert that yt-dlp is installed
     assert os.system('yt-dlp --version') == 0, 'yt-dlp is not installed, please install yt-dlp'
 
+    id = re.search(r'watch\?v=(\w+)', link).group(1)
+    link = f"https://www.youtube.com/watch?v={id}"
+
     temp_dir = os.environ.get('TMPDIR', os.environ.get('TMP', os.environ.get('TEMP', '/tmp')))
     if not os.path.exists(f'{temp_dir}/ytdlp'):
         os.mkdir(f'{temp_dir}/ytdlp')
@@ -416,6 +419,10 @@ def convert_yt_link_to_txt(link):
     cmd = f'yt-dlp -o "{temp_dir}/ytdlp/%(title)s.%(ext)s" {link}'
     with open(os.devnull, 'wb') as devnull:
         subprocess.run(cmd, stdout=devnull, stderr=subprocess.STDOUT)
+
+    get_filename_cmd = f'yt-dlp -o "%(uploader)s/%(title)s.%(ext)s" --get-filename {link}'
+    get_filename = subprocess.check_output(get_filename_cmd).decode('utf-8').strip()
+    directory = os.path.join('Youtube', re.search(r'(.*?)\\.*', get_filename).group(1))
 
     # should only be one file in the directory
     assert len(os.listdir(f'{temp_dir}/ytdlp')) == 1, 'More than one file downloaded, please specify the file'
@@ -430,8 +437,7 @@ def convert_yt_link_to_txt(link):
     text = convert_mp3_to_txt(audio_path)
     filename = ".".join(base_name.split('.')[0:-1])
 
-
-    return text, filename
+    return text, filename, directory
 
 
 def convert_article_link_to_txt(link):
@@ -450,4 +456,4 @@ def convert_article_link_to_txt(link):
     os.system(f'pandoc {temp_dir}/article.html -o {temp_dir}/article.md')
     with open(f'{temp_dir}/article.md', 'r', encoding='utf-8') as f:
         md_contents = f.read()
-    return md_contents, title
+    return md_contents, title, "article"
